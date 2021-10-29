@@ -59,46 +59,75 @@ table(poly_rev$p_igu_0)
 table(poly_rev$cdif_na)
 table(poly_rev$cdif_0)
 
-#=========================================== REPORTES y SHP
+
+
 #================crear reporte en excel y shape con el merge de tabla ALL===============================
 #crear directorio y guardar los siguiente shp completo y csv
+#anterior_st_write(poly_rev, paste0(name, "_merge_All.gpkg")) #"_merge_All.shp"
+#anterior_write_csv(poly_rev, paste0(name,"_merge_All.csv"))
+
 #=======Filtros para obtener lo que se sustituirá en LC2016 a nivel de IPCC ("P" y "C"<>"val_ipcc")
 #=======Crear las variables que contienen los polígonos que se van a sustituir por "P" y "C"=============
+
 pcorr_16 <- filter(poly_rev, pdif_0 == 1 | pdif_na == 1)
 ccorr_16 <- filter(poly_rev, cdif_na == 1 | cdif_0 == 1)
 
-#comprobar dimensiones
-dim(ccorr_16)
-dim(pcorr_16)
-
-#crear carpetas contenedoras en caso de que existan sustitución  de correciones para 2016 Val_T1 <> val_ipcc
-#MEJORAS -->> 
-if(dim(ccorr_16)[1] > 0){
-  dir.create(paste0(name,"_sust_c16"))
-}
 if(dim(pcorr_16)[1] > 0){
   dir.create(paste0(name,"_sust_p16"))
+  ruta_dirp <- paste0(paste0(name,"_sust_p16"))
+  st_write(pcorr_16, paste0(ruta_dirp,"/",name,"_sust_p16.gpkg"), delete_layer = TRUE) #.shp
 }
-#===========================================  Generar shp/gpkg  para sustituir en LC 2016 ======
+
+if(dim(ccorr_16)[1] >0){
+  dir.create(paste0(name,"_sust_c16"))
+  ruta_dirc <- paste0(paste0(name,"_sust_c16"))
+  st_write(ccorr_16, paste0(ruta_dirc,"/",name,"_sust_c16.gpkg"), delete_layer = TRUE)
+}
+
+#anterior
+#pcorr_16 <- filter(poly_rev, pdif_0 == 1 | pdif_na == 1)
+#ccorr_16 <- filter(poly_rev, cdif_na == 1 | cdif_0 == 1)
+#comprobar dimensiones EXISTENTES
+#dim(ccorr_16)
+#dim(pcorr_16)[1]
+
+#crear directorio contenedor de polígonos para actualizar el mapa de LC2016 en caso de que existan (Val_T1 <> val_ipcc)
+#anterior_ if(dim(ccorr_16)[1] > 0){
+  #dir.create(paste0(name,"_sust_c16"))
+ #st_write()
+#}
+
+#Anterior_ if(dim(pcorr_16)[1] > 0){
+ # dir.create(paste0(name,"_sust_p16"))
+#}
+#===========================================  Generar shp  para sustituir en LC 2016 ======
+
 #almacenar los shp creados para sustituir en su respectiva carpeta
-ruta <- getwd()
+#ruta <- getwd()
 #concatenar ruta &  nueva carpeta creada   ////que se ccrean si y solo si  existe
-ruta_dirc <- as.character(paste0(ruta,"/",paste0(name,"_sust_c16")))
-ruta_dirp <- as.character(paste0(ruta,"/",paste0(name,"_sust_p16")))
-
+#ruta_dirc <- as.character(paste0(ruta,"/",paste0(name,"_sust_c16")))
+#ruta_dirp <- as.character(paste0(ruta,"/",paste0(name,"_sust_p16"))) 
 #Cambiar directorio
-setwd(ruta_dirc)
-setwd(ruta_dirp)
-getwd() #comprobar cambio dentro de la nueva carpeta
-
+# setwd(ruta_dirc)
+# setwd(ruta_dirp)
+# getwd() #comprobar cambio dentro de la nueva carpeta
+#Anterior
+#ruta_dirc <- paste0(paste0(name,"_sust_c16"))
+#ruta_dirp <- paste0(paste0(name,"_sust_p16"))
 #escribir shp para sustituir dentro del directorio
-st_write(ccorr_16, paste0(name,"_sust_c16.gpkg"))
-st_write(pcorr_16, paste0(name,"_sust_p16.gpkg"))
+#(ccorr_16, paste0(name,"_sust_c16.gpkg")) #.shp
+#....st_write(pcorr_16, paste0(ruta_dirp,"/",name,"_sust_c16.gpkg")) #.shp
+#....st_write(pcorr_16, paste0(name,"_sust_p16.gpkg"))
 
 #guardar los shp o gpkg completos y csv
 st_write(poly_rev, paste0(name, "_polyrev_All.gpkg")) #o si se desea en shp poner -->> "_merge_All.shp" <<--
+#(<- st_transform(JV_E2_212, 4326))
 #Reporte en CSV
 write_csv(poly_rev, paste0(name,"_merge_All2.csv"))   #está fallando el csv, tal vez porque viene de un gpkg
 #Fin... 
 beep(2)
-#27
+#27oct
+#=======general y transformar CRS =====
+#st_crs(JV_E2_212)
+#poly transformado
+  #29oct 6pm
